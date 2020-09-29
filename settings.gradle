@@ -1,0 +1,2 @@
+include ':app','collectlibrary'
+rootProject.name='Collect'
