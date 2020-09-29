@@ -7,6 +7,7 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
+
     <com.zd.collectlibrary.view.TransformImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
