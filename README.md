@@ -1,5 +1,5 @@
 # Collect
-How to <br/>
+How to 
 To get a Git project into your build:
 
 Step 1. Add the JitPack repository to your build file
@@ -21,9 +21,11 @@ Step 2. Add the dependency
 	dependencies {
 	        implementation 'com.github.zd9453:Collect:1.0.0'
 	}
-<br>
-# TransformImageView <br/>
-(```)
+
+
+
+# TransformImageView 
+```
  <declare-styleable name="TransformImageView">
          <attr name="TransformType" format="enum">
              <enum name="roundCorner" value="0" />
@@ -35,8 +37,9 @@ Step 2. Add the dependency
          <attr name="rightTopCorner" format="dimension" />
          <attr name="rightBottomCorner" format="dimension" />
      </declare-styleable>
-(```)
-# ShapeBgTextView <br/>
+```
+
+# ShapeBgTextView 
 ```
 <declare-styleable name="ShapeBgTextView">
 
@@ -56,4 +59,3 @@ Step 2. Add the dependency
         </attr>
     </declare-styleable>
 ```
-    
