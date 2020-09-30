@@ -38,6 +38,7 @@ Step 2. Add the dependency
  * *****<attr name="rightBottomCorner" format="dimension" />
 ```
 #ShapeBgTextView <br/>
+
 ```
 <declare-styleable name="ShapeBgTextView">
 
