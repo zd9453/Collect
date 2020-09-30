@@ -20,9 +20,5 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.zd9453:Collect:Tag'
+	        implementation 'com.github.zd9453:Collect:1.0.0'
 	}
-Share this release:
-
-TweetLink
-That's it! The first time you request a project JitPack checks out the code, builds it and serves the build artifacts (jar, aar).
