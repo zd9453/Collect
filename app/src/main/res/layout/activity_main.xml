@@ -7,18 +7,37 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
-
     <com.zd.collectlibrary.view.TransformImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@color/colorPrimaryDark"
+        android:scaleType="fitXY"
+        android:src="@mipmap/test"
         app:TransformType="roundCorner"
-        app:allCorner="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintWidth_percent="0.8"
+        app:leftBottomCorner="200dp"
+        app:leftTopCorner="20dp"
+        app:rightBottomCorner="20dp"
+        app:rightTopCorner="50dp" />
+
+    <com.zd.collectlibrary.view.ShapeBgTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="千变万化"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9"
+        app:shapeBgLineWidth="1dp"
+        app:shapeColor="@android:color/darker_gray"
+        app:shapeCornerSize="5dp"
+        app:shapeStyle="fill"
+        app:showBgShape="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
