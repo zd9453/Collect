@@ -23,7 +23,7 @@ Step 2. Add the dependency
 	}
 <br>
 #TransformImageView
-'''java
+```java
  * describe: 变换的image  xml可设置属性
  * <!--变化方式  圆角类型  圆形类型-->
  * attr name="TransformType" format="enum"
@@ -36,9 +36,9 @@ Step 2. Add the dependency
  * *****<attr name="leftBottomCorner" format="dimension" />
  * *****<attr name="rightTopCorner" format="dimension" />
  * *****<attr name="rightBottomCorner" format="dimension" />
-	'''
+	```
 #ShapeBgTextView
-'''java
+```java
 <declare-styleable name="ShapeBgTextView">
         <!--是否显示我们自己画的背景-->
         <attr name="showBgShape" format="boolean" />
@@ -56,5 +56,5 @@ Step 2. Add the dependency
             <enum name="fill" value="1" />
         </attr>
     </declare-styleable>
-   ''' 
+  ```
     
