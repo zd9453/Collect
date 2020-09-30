@@ -25,10 +25,10 @@ Step 2. Add the dependency
 #TransformImageView
  * describe: 变换的image  xml可设置属性
  * <!--变化方式  圆角类型  圆形类型-->
- * <attr name="TransformType" format="enum">
- * --<enum name="roundCorner" value="0" />
- * --<enum name="circle" value="1" />
- * </attr>
+ * attr name="TransformType" format="enum"
+ * -- enum name="roundCorner" value="0" 
+ * -- enum name="circle" value="1" 
+ * 
  * <!--圆角类型的时候设置各圆角的半径大小 !如果设置了allCorner那么会覆盖掉其他单独设置的角-->
  * *****<attr name="allCorner" format="dimension" />
  * *****<attr name="leftTopCorner" format="dimension" />
