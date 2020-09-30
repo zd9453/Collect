@@ -22,7 +22,7 @@ Step 2. Add the dependency
 	        implementation 'com.github.zd9453:Collect:1.0.0'
 	}
 <br>
-#TransformImageView
+#TransformImageView <br/>
 ```
  * describe: 变换的image  xml可设置属性
  * <!--变化方式  圆角类型  圆形类型-->
@@ -37,7 +37,7 @@ Step 2. Add the dependency
  * *****<attr name="rightTopCorner" format="dimension" />
  * *****<attr name="rightBottomCorner" format="dimension" />
 ```
-#ShapeBgTextView
+#ShapeBgTextView <br/>
 ```
 <declare-styleable name="ShapeBgTextView">
 
