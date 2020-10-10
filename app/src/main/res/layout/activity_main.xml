@@ -7,37 +7,44 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
-    <com.zd.collectlibrary.view.TransformImageView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitXY"
-        android:src="@mipmap/test"
-        app:TransformType="roundCorner"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.8"
-        app:leftBottomCorner="200dp"
-        app:leftTopCorner="20dp"
-        app:rightBottomCorner="20dp"
-        app:rightTopCorner="50dp" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.zd.collectlibrary.view.ShapeBgTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="千变万化"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9"
-        app:shapeBgLineWidth="1dp"
-        app:shapeColor="@android:color/darker_gray"
-        app:shapeCornerSize="5dp"
-        app:shapeStyle="fill"
-        app:showBgShape="true" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="TransformImageView"
+                android:text="TransformImageView"
+                android:textAllCaps="false" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="ShapeBgTextView"
+                android:text="ShapeBgTextView"
+                android:textAllCaps="false" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="StatesUtils"
+                android:text="StatesUtils"
+                android:textAllCaps="false" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

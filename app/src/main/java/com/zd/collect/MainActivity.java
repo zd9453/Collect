@@ -1,8 +1,14 @@
 package com.zd.collect;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import com.zd.collect.activity.ShapeBgTextViewActivity;
+import com.zd.collect.activity.StatesUtilsActivity;
+import com.zd.collect.activity.TransformImageViewActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,4 +17,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+    private void jumpTo(Class activityClass) {
+        Intent intent = new Intent(this, activityClass);
+        startActivity(intent);
+    }
+
+    public void TransformImageView(View view) {
+        jumpTo(TransformImageViewActivity.class);
+    }
+
+    public void ShapeBgTextView(View view) {
+        jumpTo(ShapeBgTextViewActivity.class);
+    }
+
+    public void StatesUtils(View view) {
+        jumpTo(StatesUtilsActivity.class);
+    }
+
+
 }
