@@ -61,3 +61,12 @@ Step 2. Add the dependency
         </attr>
 </declare-styleable>
 ```
+# StatesLayout
+```
+<declare-styleable name="StatesLayout">
+       <!--加载过程的视图布局-->
+       <attr name="loadingView" format="reference" />
+       <!--空视图布局-->
+       <attr name="emptyView" format="reference" />
+</declare-styleable>
+```

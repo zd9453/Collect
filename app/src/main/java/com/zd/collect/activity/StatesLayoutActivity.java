@@ -10,20 +10,39 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zd.collect.R;
-import com.zd.collectlibrary.utils.StatesBarUtil;
+import com.zd.collectlibrary.view.StatesLayout;
 
-public class StatesUtilsActivity extends AppCompatActivity implements View.OnFocusChangeListener {
+public class StatesLayoutActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 //        StatesBarUtil.changeStateBar(this, Color.TRANSPARENT);
-        StatesBarUtil.changeNavigationBar(this);
+//        StatesBarUtil.changeNavigationBar(this);
 
-        setContentView(R.layout.activity_states_utils);
+        setContentView(R.layout.activity_states_layout);
 
-        StatesBarUtil.getPhoneInformation();
+//        StatesBarUtil.getPhoneInformation();
+
+        final StatesLayout statesLayout = (StatesLayout) findViewById(R.id.state_layout);
+
+        statesLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (statesLayout.getNowStates()) {
+                    case StatesLayout.STATE_CONTENT:
+                        statesLayout.showEmptyView();
+                        break;
+                    case StatesLayout.STATE_LOADING:
+                        statesLayout.showContentView();
+                        break;
+                    case StatesLayout.STATE_EMPTY:
+                        statesLayout.showLoadingView();
+                        break;
+                }
+            }
+        });
 
     }
 
