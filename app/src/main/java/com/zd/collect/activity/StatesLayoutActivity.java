@@ -10,6 +10,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zd.collect.R;
+import com.zd.collectlibrary.utils.DisplayUtils;
 import com.zd.collectlibrary.view.StatesLayout;
 
 public class StatesLayoutActivity extends AppCompatActivity implements View.OnFocusChangeListener {
@@ -43,6 +44,22 @@ public class StatesLayoutActivity extends AppCompatActivity implements View.OnFo
                 }
             }
         });
+
+        String TAG = ">>>>>";
+
+        float px = DisplayUtils.dp2Px(this, 20);
+        Log.e(TAG, "onCreate: ---- px: " + px);
+
+        boolean checkDeviceHasNavigationBar = DisplayUtils.checkDeviceHasNavigationBar(this);
+        Log.e(TAG, "onCreate: ----" + checkDeviceHasNavigationBar);
+
+        int navigationBarHeight = DisplayUtils.getNavigationBarHeight(this);
+        Log.e(TAG, "onCreate: ----" + navigationBarHeight);
+
+        int statusHeight = DisplayUtils.getStatusHeight(this);
+        Log.e(TAG, "onCreate: ---- " + statusHeight);
+
+        Log.e(TAG, "onCreate: --- " + DisplayUtils.getScreenWidth(this) + " " + DisplayUtils.getScreenHeight(this));
 
     }
 
