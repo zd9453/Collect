@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.zd.collect.activity.CustomSurfaceVideoActivity;
 import com.zd.collect.activity.ShapeBgTextViewActivity;
 import com.zd.collect.activity.StatesLayoutActivity;
 import com.zd.collect.activity.TransformImageViewActivity;
@@ -23,17 +24,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void TransformImageView(View view) {
+    public void transformImageView(View view) {
         jumpTo(TransformImageViewActivity.class);
     }
 
-    public void ShapeBgTextView(View view) {
+    public void shapeBgTextView(View view) {
         jumpTo(ShapeBgTextViewActivity.class);
     }
 
-    public void StatesUtils(View view) {
+    public void statesLayout(View view) {
         jumpTo(StatesLayoutActivity.class);
     }
 
-
+    public void customSurfaceVideo(View view) {
+        jumpTo(CustomSurfaceVideoActivity.class);
+    }
 }

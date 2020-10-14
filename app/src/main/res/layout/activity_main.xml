@@ -24,24 +24,30 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="TransformImageView"
+                android:onClick="transformImageView"
                 android:text="TransformImageView"
                 android:textAllCaps="false" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="ShapeBgTextView"
+                android:onClick="shapeBgTextView"
                 android:text="ShapeBgTextView"
                 android:textAllCaps="false" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="StatesUtils"
-                android:text="StatesUtils"
+                android:onClick="statesLayout"
+                android:text="StatesLayout"
                 android:textAllCaps="false" />
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="customSurfaceVideo"
+                android:text="CustomSurfaceVideo"
+                android:textAllCaps="false" />
 
         </LinearLayout>
 
