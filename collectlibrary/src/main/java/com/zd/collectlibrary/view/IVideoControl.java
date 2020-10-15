@@ -1,6 +1,6 @@
 package com.zd.collectlibrary.view;
 
-import android.view.View;
+import android.media.MediaPlayer;
 
 /**
  * Package: com.zd.collectlibrary.view
@@ -14,15 +14,37 @@ import android.view.View;
  */
 public interface IVideoControl {
 
+    /**
+     * 是否可操作
+     *
+     * @param enable 是否可操作
+     */
     void setEnabled(boolean enable);
 
-    void show(int position);
-
     void setMediaPlayer(CustomSurfaceVideoView videoView);
-
-    void setAnchorView(View anchor);
 
     void hide();
 
     void show();
+
+    void pause(MediaPlayer mediaPlayer);
+
+    void start(MediaPlayer mediaPlayer);
+
+    void stop(MediaPlayer mediaPlayer);
+
+    /**
+     * 当前播放进度
+     *
+     * @param isPlaying       是否在播放
+     * @param currentPosition 当前播放到的毫秒值
+     */
+    void updateTime(boolean isPlaying, int currentPosition);
+
+    /**
+     * 总时长
+     *
+     * @param duration 总时长 毫秒值
+     */
+    void updateTotalTime(int duration);
 }
