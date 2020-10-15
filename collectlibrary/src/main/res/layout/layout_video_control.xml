@@ -40,6 +40,7 @@
         android:id="@+id/bottom_play"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:padding="3dp"
         android:src="@drawable/selector_bottom_play_states"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -48,9 +49,8 @@
         android:id="@+id/tv_play_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:textColor="@android:color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/bottom_play"
         app:layout_constraintTop_toTopOf="@+id/bottom_play"
@@ -69,6 +69,7 @@
         android:id="@+id/bottom_screen"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:padding="3dp"
         android:src="@drawable/selector_bottom_screen_states"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -77,13 +78,22 @@
         android:id="@+id/tv_total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:textColor="@android:color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/bottom_screen"
         app:layout_constraintTop_toTopOf="@+id/bottom_play"
         tools:text="10:59" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/control_group"
@@ -98,5 +108,6 @@
         android:layout_height="wrap_content"
         android:visibility="visible"
         app:constraint_referenced_ids="video_cover,center_play" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

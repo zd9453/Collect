@@ -41,10 +41,11 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
             //回调播放进度
             if (null != mMediaController && canPlay()) {
                 mMediaController.updateTime(mMediaPlayer.isPlaying(), mMediaPlayer.getCurrentPosition());
+                //控制视图的显示隐藏 无操作4秒隐藏
                 if (System.currentTimeMillis() - timeMillis > 4000) {
-                    mMediaController.hide();
+                    hideController();
                 } else
-                    mMediaController.show();
+                    showController();
             }
             //继续监听
             if (null != progressHandler)
@@ -52,8 +53,9 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         }
     };
 
-    private int mCurrentPos;//当前进度
-    private long timeMillis;//最近触摸时间
+    private int mCurrentPos;    //当前进度
+    private long timeMillis;    //最近触摸时间
+    private boolean isAutoPlay; //是否加载好了就播放
 
     public void setMediaController(IVideoControl mMediaController) {
         this.mMediaController = mMediaController;
@@ -100,7 +102,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         Log.e(TAG, "surfaceChanged: ------ format:" + format + "  width:" + width + "  height:" + height);
 
         initPosition();
-        controlStart();
     }
 
     @Override
@@ -118,7 +119,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 创建音频播放组件
      */
-    private void createMediaPlayer() {
+    private synchronized void createMediaPlayer() {
         try {
             //创建播放组件
             if (null == mMediaPlayer) {
@@ -156,6 +157,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     @Override
     public void onPrepared(MediaPlayer mp) {
         isPrepared = true;
+        showLoadingControl(false);
         if (mMediaController != null) {
             //控制器可用
             mMediaController.setEnabled(true);
@@ -170,7 +172,8 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         if (mVideoWidth != 0 && mVideoHeight != 0) {
             getHolder().setFixedSize(mVideoWidth, mVideoHeight);
         }
-        controlStart();
+        if (isAutoPlay)
+            controlStart();
         Log.e(TAG, "onPrepared: -----------");
     }
 
@@ -229,39 +232,53 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 显示控制器
      */
-    private void showCtrl() {
+    private synchronized void showController() {
         if (mMediaController != null) {
-            mMediaController.show();
+            mMediaController.showControl();
         }
     }
 
     /**
      * 隐藏控制器
      */
-    private void hideController() {
+    private synchronized void hideController() {
         if (mMediaController != null) {
-            mMediaController.hide();
+            mMediaController.hideControl();
         }
+    }
+
+    /**
+     * 是否显示加载视图
+     *
+     * @param isShow .
+     */
+    private synchronized void showLoadingControl(boolean isShow) {
+        if (null != mMediaController)
+            mMediaController.showLoading(isShow);
     }
 
     /**
      * 初始化最初位置
      */
     private void initPosition() {
-        if (mCurrentPos != 0) {
+        if (!canPlay())
+            return;
+        if (mCurrentPos != 0)
             mMediaPlayer.seekTo(mCurrentPos);
-            mCurrentPos = 0;
-        }
+        mCurrentPos = 0;
     }
 
+    /**
+     * 是否可播放
+     *
+     * @return .
+     */
     private boolean canPlay() {
         return mMediaPlayer != null && isPrepared;
     }
 
     private boolean isPlaying() {
-        if (canPlay())
-            return mMediaPlayer.isPlaying();
-        return false;
+        return canPlay() && mMediaPlayer.isPlaying();
     }
 
     private int getCurrentPosition() {
@@ -288,13 +305,23 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         progressHandler = null;
     }
 
-    public synchronized void setPlaySource(String playUrl) {
+    /**
+     * 设置播放资源
+     *
+     * @param playUrl  播放地址
+     * @param autoPlay 是否加载完成就播放
+     */
+    public synchronized void setPlaySource(String playUrl, boolean autoPlay) {
         if (null == mMediaPlayer)
             createMediaPlayer();
+
+        showLoadingControl(true);
 
         if (mMediaPlayer.isPlaying())
             mMediaPlayer.pause();
         mMediaPlayer.reset();
+        isPrepared = false;
+        isAutoPlay = autoPlay;
 
         try {
             mMediaPlayer.setDataSource(playUrl);
@@ -307,13 +334,9 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 开始播放
      */
-    public void controlStart() {
+    public synchronized void controlStart() {
         if (canPlay()) {
             mMediaPlayer.start();
-
-            if (null != mMediaController) {
-                mMediaController.start(mMediaPlayer);
-            }
         }
         updateTouchTime();
     }
@@ -321,21 +344,18 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 暂停播放
      */
-    public void controlPause() {
+    public synchronized void controlPause() {
         if (canPlay()) {
             mMediaPlayer.pause();
             mCurrentPos = mMediaPlayer.getCurrentPosition();
         }
-        if (null != mMediaController)
-            mMediaController.pause(mMediaPlayer);
-
         updateTouchTime();
     }
 
     /**
      * 改变播放状态
      */
-    public void changePlayStates() {
+    public synchronized void changePlayStates() {
         if (!canPlay())
             return;
 
@@ -350,11 +370,9 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 停止播放
      */
-    public void controlStop() {
+    public synchronized void controlStop() {
         if (canPlay())
             mMediaPlayer.stop();
-        if (null != mMediaController)
-            mMediaController.stop(mMediaPlayer);
     }
 
     @Override
@@ -364,14 +382,14 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     }
 
 
-    public void changePosition(int progress) {
+    public synchronized void changePosition(int progress) {
         if (canPlay())
             mMediaPlayer.seekTo(progress);
 
         updateTouchTime();
     }
 
-    public void stopUpdateProgress(boolean isStopUpdate) {
+    public synchronized void stopUpdateProgress(boolean isStopUpdate) {
         if (null == progressHandler || null == progressRunnable)
             return;
         if (isStopUpdate) {
@@ -389,7 +407,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     /**
      * 更新上次触摸时间
      */
-    private void updateTouchTime() {
+    private synchronized void updateTouchTime() {
         timeMillis = System.currentTimeMillis();
     }
 }

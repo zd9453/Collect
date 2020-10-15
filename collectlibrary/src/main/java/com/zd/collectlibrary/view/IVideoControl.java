@@ -1,7 +1,5 @@
 package com.zd.collectlibrary.view;
 
-import android.media.MediaPlayer;
-
 /**
  * Package: com.zd.collectlibrary.view
  * <p>
@@ -23,15 +21,9 @@ public interface IVideoControl {
 
     void setMediaPlayer(CustomSurfaceVideoView videoView);
 
-    void hide();
+    void hideControl();
 
-    void show();
-
-    void pause(MediaPlayer mediaPlayer);
-
-    void start(MediaPlayer mediaPlayer);
-
-    void stop(MediaPlayer mediaPlayer);
+    void showControl();
 
     /**
      * 当前播放进度
@@ -47,4 +39,11 @@ public interface IVideoControl {
      * @param duration 总时长 毫秒值
      */
     void updateTotalTime(int duration);
+
+    /**
+     * 显示加载视图
+     *
+     * @param isShow 是否显示
+     */
+    void showLoading(boolean isShow);
 }

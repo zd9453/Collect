@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -51,6 +50,7 @@ public class VideoControlView extends FrameLayout
     private String[] list = {
             "https://upos-sz-mirrorkodo.bilivideo.com/upgcxcode/39/35/237293539/237293539-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602756387&gen=playurl&os=kodobv&oi=1974294459&trid=ce53526bbc184dac9ca045103e66b956h&platform=html5&upsig=149a27a3b39f22f36c6dfc8366102098&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
     };
+    private ProgressBar loadingView;
 
     public VideoControlView(@NonNull Context context) {
         super(context);
@@ -80,9 +80,11 @@ public class VideoControlView extends FrameLayout
         progressBar = ((SeekBar) inflate.findViewById(R.id.progress_horizontal));
         coverGroup = ((Group) inflate.findViewById(R.id.cover_group));
         controlGroup = ((Group) inflate.findViewById(R.id.control_group));
+        loadingView = ((ProgressBar) inflate.findViewById(R.id.loading));
+        loadingView.setVisibility(GONE);
+
         addView(inflate);
 
-        //封面
         centerPlay.setOnClickListener(this);
         bottomPlay.setOnClickListener(this);
         bottomScreen.setOnClickListener(this);
@@ -96,28 +98,18 @@ public class VideoControlView extends FrameLayout
     }
 
     @Override
-    public void hide() {
+    public void hideControl() {
         controlGroup.setVisibility(GONE);
     }
 
     @Override
-    public void show() {
+    public void showControl() {
         controlGroup.setVisibility(VISIBLE);
     }
 
     @Override
-    public void pause(MediaPlayer mediaPlayer) {
-
-    }
-
-    @Override
-    public void start(MediaPlayer mediaPlayer) {
-
-    }
-
-    @Override
-    public void stop(MediaPlayer mediaPlayer) {
-
+    public void showLoading(boolean isShow) {
+        loadingView.setVisibility(isShow ? VISIBLE : GONE);
     }
 
     @Override
@@ -131,7 +123,7 @@ public class VideoControlView extends FrameLayout
     public void updateTotalTime(int duration) {
         totalTime.setText(getTimeText(duration));
         progressBar.setMax(duration);
-        show();
+        showControl();
     }
 
     private String getTimeText(int time) {
@@ -163,16 +155,12 @@ public class VideoControlView extends FrameLayout
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.center_play) {
-            videoView.setPlaySource(list[dex % list.length]);
+            videoView.setPlaySource(list[dex % list.length], true);
             coverGroup.setVisibility(GONE);
         } else if (id == R.id.bottom_play) {
             videoView.changePlayStates();
         } else if (id == R.id.bottom_screen) {
             ((Activity) getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            Log.e(">>>>>", "onClick: ------ w:" + getResources().getDisplayMetrics().widthPixels + "  " + getResources().getDisplayMetrics().heightPixels);
-//            layoutParams.width = getResources().getDisplayMetrics().heightPixels;
-//            layoutParams.height = getResources().getDisplayMetrics().widthPixels;
-
             StatesBarUtil.changeStateBar((Activity) getContext(), Color.TRANSPARENT);
             StatesBarUtil.changeNavigationBar((Activity) getContext());
         }
