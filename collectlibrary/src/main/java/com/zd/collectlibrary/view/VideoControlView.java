@@ -3,6 +3,11 @@ package com.zd.collectlibrary.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +25,10 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 
 import com.zd.collectlibrary.R;
+import com.zd.collectlibrary.videoview.SurfaceVideoLayout;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -46,11 +54,12 @@ public class VideoControlView extends FrameLayout
     private SeekBar progressBar;
     private Group coverGroup;
     private Group controlGroup;
-    private CustomSurfaceVideoView videoView;
+    private SurfaceVideoLayout videoView;
     private int[] startSize = new int[2];//初始视频尺寸 [宽,高]
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     private String[] list = {
-            "https://upos-sz-mirrorcos.bilivideo.com/upgcxcode/31/80/245568031/245568031-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602836328&gen=playurl&os=cosbv&oi=1974294459&trid=5974ff121ab64294be92cb2c28dc7a4eh&platform=html5&upsig=170b138b484e8dfe50de6cc9a094bc49&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
+            "https://upos-sz-mirrorcos.bilivideo.com/upgcxcode/31/80/245568031/245568031-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602843564&gen=playurl&os=cosbv&oi=1974294459&trid=dd3c4d0674b8406da48e2b356410aa7dh&platform=html5&upsig=d579b7d091bf3bf0a82b3c579f6e5180&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
     };
     private ProgressBar loadingView;
 
@@ -96,7 +105,7 @@ public class VideoControlView extends FrameLayout
     }
 
     @Override
-    public void setMediaPlayer(CustomSurfaceVideoView videoView) {
+    public void setMediaPlayer(SurfaceVideoLayout videoView) {
         this.videoView = videoView;
     }
 
@@ -170,6 +179,10 @@ public class VideoControlView extends FrameLayout
         }
     }
 
+    public void setVideoInformation(String url) {
+        new GetBitmapThread("getBitmap", url, coverImg).start();
+    }
+
     private void clickBack() {
         Activity activity = (Activity) getContext();
         //当前是横屏，则退出横屏
@@ -182,11 +195,11 @@ public class VideoControlView extends FrameLayout
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
             ViewGroup.LayoutParams params = videoView.getLayoutParams();
-            params.width = startSize[0] == 0 ? videoView.getSurfaceWidth() : startSize[0];
-            params.height = startSize[1] == 0 ? videoView.getSurfaceHeight() : startSize[1];
+            params.width = startSize[0] == 0 ? videoView.getMeasuredWidth() : startSize[0];
+            params.height = startSize[1] == 0 ? videoView.getMeasuredHeight() : startSize[1];
             videoView.setLayoutParams(params);
 
-            changShowView(false);
+            changShowView(true);
         } else {
             //当前竖屏状态,则关闭页面
             activity.finish();
@@ -202,8 +215,8 @@ public class VideoControlView extends FrameLayout
         if (activity.getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             //记录初始播放控件尺寸
             if (startSize[0] == 0 || startSize[1] == 0) {
-                startSize[0] = videoView.getSurfaceWidth();
-                startSize[1] = videoView.getSurfaceHeight();
+                startSize[0] = videoView.getMeasuredWidth();
+                startSize[1] = videoView.getMeasuredHeight();
             }
 
             ViewParent viewParent = getParent();
@@ -233,7 +246,7 @@ public class VideoControlView extends FrameLayout
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
             ViewGroup.LayoutParams params = videoView.getLayoutParams();
-            params.height = startSize[1] == 0 ? videoView.getSurfaceHeight() : startSize[1];
+            params.height = startSize[1] == 0 ? videoView.getMeasuredHeight() : startSize[1];
             videoView.setLayoutParams(params);
 
             changShowView(true);
@@ -276,5 +289,57 @@ public class VideoControlView extends FrameLayout
         videoView.changePosition(seekBar.getProgress());
         videoView.stopUpdateProgress(false);
         tracking = false;
+    }
+
+    /**
+     * 耗时操作
+     *
+     * @param videoUrl 视频地址
+     * @return 第一帧
+     */
+    private Bitmap getFirstBitmap(String videoUrl) {
+        try {
+            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+            mediaMetadataRetriever.setDataSource(videoUrl, new HashMap<String, String>());
+            return mediaMetadataRetriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    class GetBitmapThread extends Thread {
+        private String videoUrl;
+        private WeakReference<ImageView> coverImg;
+
+        public GetBitmapThread(@NonNull String name, String videoUrl, ImageView imageView) {
+            super(name);
+            this.videoUrl = videoUrl;
+            this.coverImg = new WeakReference<>(imageView);
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            if (TextUtils.isEmpty(videoUrl) || null == coverImg || null == coverImg.get())
+                return;
+            final Bitmap firstBitmap = getFirstBitmap(videoUrl);
+
+            if (null == firstBitmap || null == coverImg || null == coverImg.get())
+                return;
+
+            //需要切换到主线程显示
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    showCoverImage(coverImg.get(), firstBitmap);
+                }
+            });
+        }
+    }
+
+    private void showCoverImage(ImageView imageView, Bitmap firstBitmap) {
+        if (null != imageView)
+            imageView.setImageBitmap(firstBitmap);
     }
 }

@@ -1,5 +1,7 @@
 package com.zd.collectlibrary.view;
 
+import com.zd.collectlibrary.videoview.SurfaceVideoLayout;
+
 /**
  * Package: com.zd.collectlibrary.view
  * <p>
@@ -19,7 +21,7 @@ public interface IVideoControl {
      */
     void setEnabled(boolean enable);
 
-    void setMediaPlayer(CustomSurfaceVideoView videoView);
+    void setMediaPlayer(SurfaceVideoLayout videoView);
 
     void hideControl();
 

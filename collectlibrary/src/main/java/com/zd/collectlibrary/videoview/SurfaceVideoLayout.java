@@ -1,35 +1,46 @@
-package com.zd.collectlibrary.view;
+package com.zd.collectlibrary.videoview;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.zd.collectlibrary.R;
+import com.zd.collectlibrary.view.IVideoControl;
+import com.zd.collectlibrary.view.IVideoListener;
+
+import java.util.Locale;
+
 /**
- * Package: com.zd.collectlibrary.view
+ * Package: com.zd.collectlibrary.videoview
  * <p>
- * describe: 写自己的视频播放器
+ * describe:
  *
- * @author zhangdong on 2020/10/13
+ * @author zhangdong on 2020/10/16
  * @version 1.0
  * @see .
  * @since 1.0
  */
-public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder.Callback,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnVideoSizeChangedListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+public class SurfaceVideoLayout extends ConstraintLayout
+        implements SurfaceHolder.Callback, MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnErrorListener {
 
-    private static final String TAG = ">>>>>SurfaceView";
+    private static final String TAG = ">>>>>SurfaceVideoLayout";
     private SurfaceHolder mSurfaceHolder;   //承载视频播放画面
     private MediaPlayer mMediaPlayer;       //视频播放组件
     private IVideoControl mMediaController; //控制视频播放逻辑
@@ -63,26 +74,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     private long timeMillis;    //最近触摸时间
     private boolean isAutoPlay; //是否加载好了就播放
 
-    public int getSurfaceWidth() {
-        return mSurfaceWidth;
-    }
-
-    public int getSurfaceHeight() {
-        return mSurfaceHeight;
-    }
-
-    public int getmVideoWidth() {
-        return mVideoWidth;
-    }
-
-    public int getmVideoHeight() {
-        return mVideoHeight;
-    }
-
-    public void setStepTime(long stepTime) {
-        this.stepTime = stepTime;
-    }
-
     public void setMediaController(IVideoControl mMediaController) {
         this.mMediaController = mMediaController;
     }
@@ -91,27 +82,49 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         this.iVideoListener = iVideoListener;
     }
 
-    public CustomSurfaceVideoView(Context context) {
+    public int getSurfaceWidth() {
+        return mSurfaceWidth;
+    }
+
+    public int getSurfaceHeight() {
+        return mSurfaceHeight;
+    }
+
+    public int getVideoWidth() {
+        return mVideoWidth;
+    }
+
+    public int getVideoHeight() {
+        return mVideoHeight;
+    }
+
+    public SurfaceVideoLayout(@NonNull Context context) {
         super(context);
-        init();
+        createSurfaceView();
     }
 
-    public CustomSurfaceVideoView(Context context, AttributeSet attrs) {
+    public SurfaceVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        createSurfaceView();
     }
 
-    public CustomSurfaceVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SurfaceVideoLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        createSurfaceView();
     }
 
-    private void init() {
+    private void createSurfaceView() {
+        //设置黑色背景
+        setBackgroundColor(Color.BLACK);
+        //创建一个surfaceView
+        SurfaceView surfaceView = ((SurfaceView) LayoutInflater.from(getContext()).inflate(R.layout.layout_surface, this, false));
+        addView(surfaceView, 0);
+
         //获取焦点
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        requestFocus();
-        getHolder().addCallback(this);
+        surfaceView.setFocusable(true);
+        surfaceView.setFocusableInTouchMode(true);
+        surfaceView.requestFocus();
+        surfaceView.getHolder().addCallback(this);
     }
 
     @Override
@@ -177,11 +190,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         }
     }
 
-    /**
-     * 音频装载完成
-     *
-     * @param mp .
-     */
     @Override
     public void onPrepared(MediaPlayer mp) {
         isPrepared = true;
@@ -205,13 +213,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         Log.e(TAG, "onPrepared: -----------");
     }
 
-    /**
-     * 视频尺寸改变
-     *
-     * @param mp     .
-     * @param width  视频w
-     * @param height 视频H
-     */
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
         mVideoWidth = mp.getVideoWidth();
@@ -221,11 +222,12 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         }
 //        changeSize();
 
-//        changeVideoSize();
-
-//        if (mVideoWidth != 0 && mVideoHeight != 0) {
-//            getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-//        }
+        if (mVideoWidth != 0 && mVideoHeight != 0) {
+            View view = getChildAt(0);
+            ConstraintLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
+            params.dimensionRatio = String.format(Locale.CHINA, "%d:%d", mVideoWidth, mVideoHeight);
+            getChildAt(0).setLayoutParams(params);
+        }
 
         Log.e(TAG, "onVideoSizeChanged: ------------ w:" + mVideoWidth + "  H:" + mVideoHeight);
     }
@@ -253,59 +255,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
 //        getHolder().setFixedSize(mVideoWidth, mVideoHeight);
     }
 
-    /**
-     * 修改预览View的大小,以用来适配屏幕
-     */
-    public void changeVideoSize() {
-        int videoWidth = mMediaPlayer.getVideoWidth();
-        int videoHeight = mMediaPlayer.getVideoHeight();
-        int deviceWidth = getResources().getDisplayMetrics().widthPixels;
-        int deviceHeight = getResources().getDisplayMetrics().heightPixels;
-        Log.e(TAG, "changeVideoSize: deviceHeight=" + deviceHeight + "deviceWidth=" + deviceWidth);
-        float devicePercent = 0;
-        //下面进行求屏幕比例,因为横竖屏会改变屏幕宽度值,所以为了保持更小的值除更大的值.
-        if (getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) { //竖屏
-            devicePercent = (float) deviceWidth / (float) deviceHeight; //竖屏状态下宽度小与高度,求比
-        } else { //横屏
-            devicePercent = (float) deviceHeight / (float) deviceWidth; //横屏状态下高度小与宽度,求比
-        }
-
-        if (videoWidth > videoHeight) { //判断视频的宽大于高,那么我们就优先满足视频的宽度铺满屏幕的宽度,然后在按比例求出合适比例的高度
-            videoWidth = deviceWidth;//将视频宽度等于设备宽度,让视频的宽铺满屏幕
-            videoHeight = (int) (deviceWidth * devicePercent);//设置了视频宽度后,在按比例算出视频高度
-
-        } else {  //判断视频的高大于宽,那么我们就优先满足视频的高度铺满屏幕的高度,然后在按比例求出合适比例的宽度
-            if (getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {//竖屏
-                videoHeight = deviceHeight;
-                /**
-                 * 接受在宽度的轻微拉伸来满足视频铺满屏幕的优化
-                 */
-                float videoPercent = (float) videoWidth / (float) videoHeight;//求视频比例 注意是宽除高 与 上面的devicePercent 保持一致
-                float differenceValue = Math.abs(videoPercent - devicePercent);//相减求绝对值
-                if (differenceValue < 0.3) { //如果小于0.3比例,那么就放弃按比例计算宽度直接使用屏幕宽度
-                    videoWidth = deviceWidth;
-                } else {
-                    videoWidth = (int) (videoWidth / devicePercent);//注意这里是用视频宽度来除
-                }
-
-            } else { //横屏
-                videoHeight = deviceHeight;
-                videoWidth = (int) (deviceHeight * devicePercent);
-            }
-        }
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.getLayoutParams();
-        layoutParams.width = videoWidth;
-        layoutParams.height = videoHeight;
-//        layoutParams.verticalBias = 0.5f;
-//        layoutParams.horizontalBias = 0.5f;
-        this.setLayoutParams(layoutParams);
-    }
-
-    /**
-     * 视频播放完成
-     *
-     * @param mp .
-     */
     @Override
     public void onCompletion(MediaPlayer mp) {
         mp.seekTo(0);
@@ -316,14 +265,6 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         Log.e(TAG, "onCompletion: ----------");
     }
 
-    /**
-     * 视频播放出错
-     *
-     * @param mp    .
-     * @param what  .
-     * @param extra .
-     * @return .
-     */
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         //回调播放出错

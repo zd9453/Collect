@@ -32,7 +32,7 @@ public abstract class IVideoListener implements
 
     }
 
-    protected void onSizeChange() {
+    public void onSizeChange() {
 
     }
 }
