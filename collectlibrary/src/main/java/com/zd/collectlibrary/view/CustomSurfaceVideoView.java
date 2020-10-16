@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
 
 /**
  * Package: com.zd.collectlibrary.view
@@ -34,6 +35,8 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     private int mVideoWidth, mVideoHeight;  //视频宽高
     private boolean isPrepared = false;     //资源是否装载完成
 
+    private long stepTime = 3000;//无操作多长间隔隐藏控制视图
+
     private Handler progressHandler = new Handler(Looper.getMainLooper());
     private Runnable progressRunnable = new Runnable() {
         @Override
@@ -42,7 +45,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
             if (null != mMediaController && canPlay()) {
                 mMediaController.updateTime(mMediaPlayer.isPlaying(), mMediaPlayer.getCurrentPosition());
                 //控制视图的显示隐藏 无操作4秒隐藏
-                if (System.currentTimeMillis() - timeMillis > 4000) {
+                if (System.currentTimeMillis() - timeMillis > stepTime) {
                     hideController();
                 } else
                     showController();
@@ -56,6 +59,26 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
     private int mCurrentPos;    //当前进度
     private long timeMillis;    //最近触摸时间
     private boolean isAutoPlay; //是否加载好了就播放
+
+    public int getSurfaceWidth() {
+        return mSurfaceWidth;
+    }
+
+    public int getSurfaceHeight() {
+        return mSurfaceHeight;
+    }
+
+    public int getmVideoWidth() {
+        return mVideoWidth;
+    }
+
+    public int getmVideoHeight() {
+        return mVideoHeight;
+    }
+
+    public void setStepTime(long stepTime) {
+        this.stepTime = stepTime;
+    }
 
     public void setMediaController(IVideoControl mMediaController) {
         this.mMediaController = mMediaController;
@@ -100,6 +123,8 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         mSurfaceHeight = height;
         mSurfaceWidth = width;
         Log.e(TAG, "surfaceChanged: ------ format:" + format + "  width:" + width + "  height:" + height);
+
+        changeSize();
 
         initPosition();
     }
@@ -169,9 +194,9 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         }
         mVideoWidth = mp.getVideoWidth();
         mVideoHeight = mp.getVideoHeight();
-        if (mVideoWidth != 0 && mVideoHeight != 0) {
+        /*if (mVideoWidth != 0 && mVideoHeight != 0) {
             getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-        }
+        }*/
         if (isAutoPlay)
             controlStart();
         Log.e(TAG, "onPrepared: -----------");
@@ -191,10 +216,30 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         if (iVideoListener != null) {
             iVideoListener.onSizeChange();
         }
-        if (mVideoWidth != 0 && mVideoHeight != 0) {
-            getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-        }
-        Log.e(TAG, "onVideoSizeChanged: ------------ w:" + width + "  H:" + height);
+        changeSize();
+
+        Log.e(TAG, "onVideoSizeChanged: ------------ w:" + mVideoWidth + "  H:" + mVideoHeight);
+    }
+
+    private void changeSize() {
+        if (mVideoWidth == 0 || mVideoHeight == 0)
+            return;
+        if (mVideoWidth * 1f / mVideoHeight == mSurfaceWidth * 1f / mSurfaceHeight)
+            return;
+        //根据视频尺寸去计算->视频可以在sufaceView中放大的最大倍数。
+        float max = Math.max(
+                ((float) mVideoWidth / (float) mSurfaceWidth),
+                (float) mVideoHeight / (float) mSurfaceHeight);
+        //视频宽高分别/最大倍数值 计算出放大后的视频尺寸
+        mVideoWidth = (int) Math.ceil((float) mVideoWidth / max);
+        mVideoHeight = (int) Math.ceil((float) mVideoHeight / max);
+        //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView 让视频自动填充。
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        layoutParams.width = mVideoWidth;
+        layoutParams.height = mVideoHeight;
+        setLayoutParams(layoutParams);
+
+//        getHolder().setFixedSize(mVideoWidth, mVideoHeight);
     }
 
     /**
@@ -338,7 +383,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         if (canPlay()) {
             mMediaPlayer.start();
         }
-        updateTouchTime();
+        updateTouchTime(false);
     }
 
     /**
@@ -349,7 +394,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
             mMediaPlayer.pause();
             mCurrentPos = mMediaPlayer.getCurrentPosition();
         }
-        updateTouchTime();
+        updateTouchTime(false);
     }
 
     /**
@@ -364,7 +409,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         else
             mMediaPlayer.start();
 
-        updateTouchTime();
+        updateTouchTime(false);
     }
 
     /**
@@ -386,7 +431,7 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
         if (canPlay())
             mMediaPlayer.seekTo(progress);
 
-        updateTouchTime();
+        updateTouchTime(false);
     }
 
     public synchronized void stopUpdateProgress(boolean isStopUpdate) {
@@ -400,14 +445,22 @@ public class CustomSurfaceVideoView extends SurfaceView implements SurfaceHolder
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        updateTouchTime();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            updateTouchTime(true);
+        }
         return super.onTouchEvent(event);
     }
 
     /**
      * 更新上次触摸时间
      */
-    private synchronized void updateTouchTime() {
-        timeMillis = System.currentTimeMillis();
+    private synchronized void updateTouchTime(boolean isVideoTouch) {
+        long touchTime = System.currentTimeMillis();
+        if (isVideoTouch && touchTime - timeMillis < stepTime) {
+            //如果是摸视频内容 则马上改变显示隐藏的状态
+            timeMillis = 0;
+        } else {
+            timeMillis = touchTime;
+        }
     }
 }

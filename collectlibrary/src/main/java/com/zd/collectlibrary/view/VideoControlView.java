@@ -3,10 +3,12 @@ package com.zd.collectlibrary.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 
 import com.zd.collectlibrary.R;
-import com.zd.collectlibrary.utils.StatesBarUtil;
 
 import java.util.Locale;
 
@@ -46,9 +47,10 @@ public class VideoControlView extends FrameLayout
     private Group coverGroup;
     private Group controlGroup;
     private CustomSurfaceVideoView videoView;
+    private int[] startSize = new int[2];//初始视频尺寸 [宽,高]
 
     private String[] list = {
-            "https://upos-sz-mirrorkodo.bilivideo.com/upgcxcode/39/35/237293539/237293539-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602756387&gen=playurl&os=kodobv&oi=1974294459&trid=ce53526bbc184dac9ca045103e66b956h&platform=html5&upsig=149a27a3b39f22f36c6dfc8366102098&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
+            "https://upos-sz-mirrorcos.bilivideo.com/upgcxcode/31/80/245568031/245568031-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602836328&gen=playurl&os=cosbv&oi=1974294459&trid=5974ff121ab64294be92cb2c28dc7a4eh&platform=html5&upsig=170b138b484e8dfe50de6cc9a094bc49&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
     };
     private ProgressBar loadingView;
 
@@ -86,6 +88,7 @@ public class VideoControlView extends FrameLayout
         addView(inflate);
 
         centerPlay.setOnClickListener(this);
+        imgBack.setOnClickListener(this);
         bottomPlay.setOnClickListener(this);
         bottomScreen.setOnClickListener(this);
 
@@ -160,11 +163,98 @@ public class VideoControlView extends FrameLayout
         } else if (id == R.id.bottom_play) {
             videoView.changePlayStates();
         } else if (id == R.id.bottom_screen) {
-            ((Activity) getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            StatesBarUtil.changeStateBar((Activity) getContext(), Color.TRANSPARENT);
-            StatesBarUtil.changeNavigationBar((Activity) getContext());
+            //改变横竖屏方向
+            changeScreenOrientation();
+        } else if (id == R.id.img_back) {
+            clickBack();
         }
+    }
 
+    private void clickBack() {
+        Activity activity = (Activity) getContext();
+        //当前是横屏，则退出横屏
+        if (activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
+            attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().setAttributes(attrs);
+            activity.getWindow().clearFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            ViewGroup.LayoutParams params = videoView.getLayoutParams();
+            params.width = startSize[0] == 0 ? videoView.getSurfaceWidth() : startSize[0];
+            params.height = startSize[1] == 0 ? videoView.getSurfaceHeight() : startSize[1];
+            videoView.setLayoutParams(params);
+
+            changShowView(false);
+        } else {
+            //当前竖屏状态,则关闭页面
+            activity.finish();
+        }
+    }
+
+    int showIndex[] = {-1, -1};
+
+    private void changeScreenOrientation() {
+
+        Activity activity = (Activity) getContext();
+        //当前是竖屏
+        if (activity.getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            //记录初始播放控件尺寸
+            if (startSize[0] == 0 || startSize[1] == 0) {
+                startSize[0] = videoView.getSurfaceWidth();
+                startSize[1] = videoView.getSurfaceHeight();
+            }
+
+            ViewParent viewParent = getParent();
+            if (viewParent instanceof ViewGroup) {
+                showIndex[0] = ((ViewGroup) viewParent).indexOfChild(videoView);
+                showIndex[1] = ((ViewGroup) viewParent).indexOfChild(this);
+            }
+
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
+            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            activity.getWindow().setAttributes(attrs);
+            activity.getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            ViewGroup.LayoutParams params = videoView.getLayoutParams();
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            videoView.setLayoutParams(params);
+            changShowView(false);
+        } else {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
+            attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().setAttributes(attrs);
+            activity.getWindow().clearFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            ViewGroup.LayoutParams params = videoView.getLayoutParams();
+            params.height = startSize[1] == 0 ? videoView.getSurfaceHeight() : startSize[1];
+            videoView.setLayoutParams(params);
+
+            changShowView(true);
+        }
+    }
+
+    private void changShowView(boolean isShowAll) {
+        if (getParent() instanceof ViewGroup) {
+            ViewGroup parent = (ViewGroup) getParent();
+            if (isShowAll) {
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    parent.getChildAt(i).setVisibility(VISIBLE);
+                }
+            } else {
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    if (i == showIndex[0] || i == showIndex[1])
+                        parent.getChildAt(i).setVisibility(VISIBLE);
+                    else parent.getChildAt(i).setVisibility(GONE);
+                }
+            }
+        }
     }
 
     @Override

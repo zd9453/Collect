@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".activity.CustomSurfaceVideoActivity">
 
+    <ImageView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@mipmap/test"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.zd.collectlibrary.view.CustomSurfaceVideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
@@ -14,7 +24,7 @@
         app:layout_constraintDimensionRatio="640:360"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/content" />
 
     <com.zd.collectlibrary.view.VideoControlView
         android:id="@+id/control"
