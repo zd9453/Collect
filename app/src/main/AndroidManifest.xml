@@ -13,10 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".activity.CustomSurfaceVideoActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/NoActionBarStyle">
+        <activity android:name=".activity.StatesUtilsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,11 +23,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.CustomSurfaceVideoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+
+        </activity>
+        <activity
             android:name=".activity.StatesLayoutActivity"
             android:theme="@style/NoActionBarStyle" />
         <activity android:name=".activity.ShapeBgTextViewActivity" />
         <activity android:name=".activity.TransformImageViewActivity" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

@@ -52,18 +52,19 @@ public class StatesBarUtil {
             return;
         Window window = activity.getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            window.getDecorView().setSystemUiVisibility(option);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-                    | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//            window.setNavigationBarColor(Color.TRANSPARENT);
-//            window.setStatusBarColor(Color.BLUE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setNavigationBarColor(Color.TRANSPARENT);
+//            window.setStatusBarColor(Color.TRANSPARENT);
+
+            int option = /*View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN*/
+//                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY/*
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE*/;
+            window.getDecorView().setSystemUiVisibility(option);
         }
 
     }
@@ -158,4 +159,25 @@ public class StatesBarUtil {
          * E/>>>>>: getPhoneInformation: ----securityPatch: 2020-05-01
          */
     }
+
+    public static void hideTitleView(Activity activity) {
+        //after before setContentView(id)
+        if (null == activity || activity.isFinishing())
+            return;
+        try {
+            activity.getActionBar().hide();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+       /* activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+        );*/
+
+    }
+
+
 }

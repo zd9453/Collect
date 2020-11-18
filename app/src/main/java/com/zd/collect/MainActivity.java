@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.zd.collect.activity.CustomSurfaceVideoActivity;
 import com.zd.collect.activity.ShapeBgTextViewActivity;
 import com.zd.collect.activity.StatesLayoutActivity;
+import com.zd.collect.activity.StatesUtilsActivity;
 import com.zd.collect.activity.TransformImageViewActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,5 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void customSurfaceVideo(View view) {
         jumpTo(CustomSurfaceVideoActivity.class);
+    }
+
+    public void statesUtils(View view) {
+        jumpTo(StatesUtilsActivity.class);
     }
 }

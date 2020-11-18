@@ -49,6 +49,13 @@
                 android:text="CustomSurfaceVideo"
                 android:textAllCaps="false" />
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="statesUtils"
+                android:text="StatesUtils"
+                android:textAllCaps="false" />
+
         </LinearLayout>
 
     </ScrollView>

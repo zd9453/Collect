@@ -9,10 +9,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -59,7 +61,7 @@ public class VideoControlView extends FrameLayout
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
     private String[] list = {
-            "https://upos-sz-mirrorcos.bilivideo.com/upgcxcode/31/80/245568031/245568031-1-16.mp4?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1602843564&gen=playurl&os=cosbv&oi=1974294459&trid=dd3c4d0674b8406da48e2b356410aa7dh&platform=html5&upsig=d579b7d091bf3bf0a82b3c579f6e5180&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,platform&mid=0&logo=80000000",
+            "https://1257165525.vod2.myqcloud.com/ca077e89vodcq1257165525/8fef94ba5285890807459669109/lOlro63hcWYA.mp4",
     };
     private ProgressBar loadingView;
 
@@ -194,6 +196,9 @@ public class VideoControlView extends FrameLayout
             activity.getWindow().clearFlags(
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+            int uiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
+            Log.e(">>>>>>", "changeScreenOrientation: ------ " + uiVisibility);
+
             ViewGroup.LayoutParams params = videoView.getLayoutParams();
             params.width = startSize[0] == 0 ? videoView.getMeasuredWidth() : startSize[0];
             params.height = startSize[1] == 0 ? videoView.getMeasuredHeight() : startSize[1];
@@ -226,11 +231,27 @@ public class VideoControlView extends FrameLayout
             }
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
             WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
             attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
             activity.getWindow().setAttributes(attrs);
-            activity.getWindow().addFlags(
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//            activity.getWindow().addFlags(
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            Window window = activity.getWindow();
+            View decorView = window.getDecorView();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            int uiVisibility = decorView.getSystemUiVisibility();
+            Log.e(">>>>>>", "changeScreenOrientation: ------ " + uiVisibility);
+
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            decorView.setSystemUiVisibility(uiOptions);
+
+            uiVisibility = decorView.getSystemUiVisibility();
+            Log.e(">>>>>>", "changeScreenOrientation: ------ " + uiVisibility);
 
             ViewGroup.LayoutParams params = videoView.getLayoutParams();
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -244,6 +265,12 @@ public class VideoControlView extends FrameLayout
             activity.getWindow().setAttributes(attrs);
             activity.getWindow().clearFlags(
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+            int uiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
+            Log.e(">>>>>>", "changeScreenOrientation: ------ " + uiVisibility);
+
+            activity.getWindow().getDecorView().setSystemUiVisibility(0);
+
 
             ViewGroup.LayoutParams params = videoView.getLayoutParams();
             params.height = startSize[1] == 0 ? videoView.getMeasuredHeight() : startSize[1];

@@ -3,10 +3,11 @@
 
     <style name="NoActionBarStyle" parent="Theme.AppCompat.NoActionBar">
 
-<!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
 
+    </style>
 
-
+    <style name="NoActionBarStyleScreen" parent="@android:style/Theme.NoTitleBar.Fullscreen">
 
     </style>
 
